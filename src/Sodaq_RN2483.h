@@ -167,7 +167,7 @@ class Sodaq_RN2483
     bool setMacParam(const char* paramName, uint8_t paramValue);
     bool setMacParam(const char* paramName, const char* paramValue);
 
-    uint8_t waitRx(ReceiveCallback callback, uint16_t timeout = DEFAULT_TIMEOUT);
+    uint8_t waitRx(uint16_t timeout = DEFAULT_TIMEOUT);
 
     // Sets the (optional) callback to call when a reply is received
     void setReceiveCallback(ReceiveCallback callback) { _receiveCallback = callback; };

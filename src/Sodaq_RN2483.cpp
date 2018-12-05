@@ -773,7 +773,7 @@ uint8_t Sodaq_RN2483::lookupMacTransmitError(const char* error)
     return NoResponse;
 }
 
-uint8_t waitRx(ReceiveCallback callback, uint16_t timeout) {
+uint8_t Sodaq_RN2483::waitRx( uint16_t timeout) {
   unsigned long start = millis();
   while (timeout==0 || millis() - start < timeout) {
     sodaq_wdt_reset();
