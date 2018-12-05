@@ -773,6 +773,31 @@ uint8_t Sodaq_RN2483::lookupMacTransmitError(const char* error)
     return NoResponse;
 }
 
+uint8_t waitRx(ReceiveCallback callback, uint16_t timeout) {
+  unsigned long start = millis();
+  while (timeout==0 || millis() - start < timeout) {
+    sodaq_wdt_reset();
+    debugPrint(".");
+
+    if (readLn() > 0) {
+        debugPrintLn(".");
+        debugPrint("(");
+        debugPrint(this->_inputBuffer);
+        debugPrintLn(")");
+
+        if (strstr(this->_inputBuffer, " ") != NULL) { // to avoid double delimiter search
+            // there is a splittable line -only case known is mac_rx
+            debugPrintLn("Splittable response found");
+            return onMacRX();
+        } else {
+            // lookup the error message
+            debugPrintLn("Some other string received");
+            return lookupMacTransmitError(this->_inputBuffer);
+        }
+    }
+  }
+}
+
 uint8_t Sodaq_RN2483::macTransmit(const char* type, uint8_t port, const uint8_t* payload, uint8_t size)
 {
     debugPrintLn("[macTransmit]");
@@ -863,7 +888,7 @@ uint8_t Sodaq_RN2483::onMacRX()
         debugPrintLn("[onMacRX]: packet contains no payload.");
         return NoError;
     }
-    
+
     uint16_t len = strlen(token) + 1; // include termination char
     uint16_t start = (token - _inputBuffer);
     uint16_t inputIndex = start;
